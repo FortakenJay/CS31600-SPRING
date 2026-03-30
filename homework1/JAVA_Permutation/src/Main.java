@@ -12,7 +12,7 @@ public class Main {
             nums1.add(i);
             nums2.add(i);
         }
-
+    
         UnseededRandom unseededRandomRandomClass = new UnseededRandom();
         unseededRandomRandomClass.UnseededRandom(nums1);
 
