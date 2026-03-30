@@ -1,50 +1,48 @@
 from enum import Enum
 
-
+#This is a normal enum where there are 3 different names and different values. 
 class Color(Enum):
-    """
-    Standard enum for basic iteration/introspection testing.
-    """
     RED = 1
     GREEN = 2
     BLUE = 3
 
-
+#This is a different enum where there are 3 different names but only 2 different values since ALIAS_TO_FIRST 
+# has the same value as FIRST.
 class DuplicateEnum(Enum):
-    """
-    Attempt to assign the same integer to two enum values by name.
-    In Python, this creates an ALIAS, not a separate value.
-    """
     FIRST = 1
     SECOND = 2
-    # Attempting to assign the same value to a new name
-    ALIAS_TO_FIRST = 1  # This becomes an alias, not a new member
+    ALIAS_TO_FIRST = 1  
 
-
-def print_enum_without_hardcoding(enum_class: type) -> None:
-    """
-    Iterate over all enum values without hardcoding them individually.
-    This demonstrates Python's built-in introspection support.
-    """
-    print(f"All values in {enum_class.__name__}:")
-    for member in enum_class:
+# This is a function where it takes an enum class as an argument and iterates over all the members
+# and prints the values using the built-in __name__ and __value__ attributes of the enum members. 
+def printEnumWithoutHardcoding(enumClass: type) -> None:
+    print(f"All values in {enumClass.__name__}:")
+    for member in enumClass:
         print(f"  {member.name} = {member.value}")
 
 
+# main function evaluates the program and tests for many cases. The first case is normal and nothing special,
+# part 1 just prints the values of Color Enum. 
+# part 2 tests for the duplicate cases since duplicate alias is a special case in enums,
+# where it tries to print all the values of the duplicate enum but prints 2 values instead of 3 
+# this is because DuplicateEnum is considered to have only 2 unique values since FIRST and ALIAS_TO_FIRST are the same value.
+# then we also tried to call the function directly with the alias name and it works since it's just an alias to the first value.
+# Then we checked if FIRST and the duplicate alias are the same object and it returns true, meaning that they are the same member in the enum.
+# Lastly we checked for how many mombers it appear and which members appear and it only shows FIRST and SECOND but not the alias since it's hidden as an alias.
+# However we cna still access the alias by the name directly but will return the same value as First. 
+# 
 def main():
-    print("=" * 70)
+
     print("PART 1: Iteration Without Hardcoding")
-    print("=" * 70)
     
     print("\nIterating over Color enum:")
-    print_enum_without_hardcoding(Color)
+    printEnumWithoutHardcoding(Color)
     
-    print("\n" + "=" * 70)
-    print("PART 2: Duplicate Integer Assignment (Aliases)")
-    print("=" * 70)
+    print("\n")
+    print("PART 2: Duplicate Alias of Existing Enum Values")
     
     print("\nIterating over DuplicateEnum:")
-    print_enum_without_hardcoding(DuplicateEnum)
+    printEnumWithoutHardcoding(DuplicateEnum)
     
     print("\nDetailed analysis of DuplicateEnum members:")
     for member in DuplicateEnum:
@@ -74,32 +72,8 @@ def main():
     except AttributeError as e:
         print(f"  No: {e}")
     
-    print("\n" + "=" * 70)
-    print("PART 3: Code Complexity Comparison (Python vs explicit iteration)")
-    print("=" * 70)
-    
-    print("\nPython built-in iteration (elegant, 1 line of logic):")
-    print("  for member in ColorEnum:")
-    print("      print(member.name, member.value)")
-    
-    print("\nWithout enum support (what we'd need to do):")
-    print("  colors = [('RED', 1), ('GREEN', 2), ('BLUE', 3)]")
-    print("  for name, value in colors:")
-    print("      print(name, value)")
-    print("  # Plus manual synchronization needed if enum changes!")
-    
-    print("\n" + "=" * 70)
-    print("ANALYSIS:")
-    print("=" * 70)
-    print("Python iteration and introspection:")
-    print("  - Built-in: 'for member in EnumClass' works immediately")
-    print("  - Accessing members: member.name and member.value available")
-    print("  - Duplicate integer assignment: Creates ALIASES, not separate values")
-    print("  - Aliases: Appear only as attributes, hidden from iteration")
-    print("  - Can access aliases by name: DuplicateEnum.ALIAS_TO_FIRST works")
-    print("  - Iteration count: Only counts unique enum members (excludes aliases)")
-    print("  - Code efficiency: Much shorter than manual list management")
-
+    print("\n")
 
 if __name__ == "__main__":
     main()
+main()

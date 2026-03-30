@@ -3,18 +3,20 @@ from typing import Optional
 
 
 
-
+# Since Python does not have a way to directly write name = value,value
+# We did a tuple to handle multiple values and inside, we did a dictionary to store the shape's information
 class Shape(Enum):
     CIRCLE = (1, {"shape": "circle", "radius": 5.0})
     SQUARE = (2, {"shape": "square", "side": 4.0})
     RECTANGLE = (3, {"shape": "rectangle", "width": 6.0, "height": 3.0})
     ERROR = (99, {"error_code": 500, "message": "Internal Server Error"})
 
-
+#this is a get function that takes the shape enum and return the data of the shape by getting shape.value[1]
 def getShapeInformation(shape: Shape) -> dict:
     return shape.value[1] 
 
-
+#this calculates the area of the shape based on the shape's information and returns the area. Otherwise, it will return 1 if the shape is ERROR. 
+#first this calls getShapeInformation, then it checks the shape type and lastly it calculates the area based on the type of enum. 
 def calculateShapeArea(shape: Shape) -> float:
     data = getShapeInformation(shape)
     
@@ -32,12 +34,17 @@ def calculateShapeArea(shape: Shape) -> float:
         return -1  
     return 0
 
-
+# The main function executes the program and tests for many cases.
+# In part 1, the basic of the program is tested and passed by ensuring all the appropriate data is printed and area calculated.
+# In part 2 we tests the data access by using a library in Python that allows us to declare a variable 
+# that can be None or a Shape. This way we can test for None and safely return something or get a shape and return the shape
+# The other test is to try to access the data without checking for None, so the console will return an error at runtime. 
+# For test 3 is just another way to test for None before accessing the data. 
+# Test 4 shows how we can safely guard check by using isinstance to check if the variable is of type Shape 
+# before trying to access the data. This way we are strictly getting shape and nothing else. 
 def main():
-
     print("PART 1: Enum Values with Associated Data")
     print("\n")
-    
    
     for shape in [Shape.CIRCLE, Shape.SQUARE, Shape.RECTANGLE]:
         data = getShapeInformation(shape)
@@ -49,7 +56,7 @@ def main():
     print("\n")
     print("PART 2: Accessing Data on Null/Uninitialized Enum Variable")
 
-    print("\nTest 1: Accessing data on None:")
+    print("\n Test 1: Accessing data on None:")
     uninitialized: Optional[Shape] = None
     try:
         if uninitialized is not None:
@@ -59,7 +66,7 @@ def main():
     except AttributeError as e:
         print(f"ERROR: {type(e).__name__}: {e}")
     
-    print("\nTest 2: Trying to access data without None check:")
+    print("\n Test 2: Trying to access data without None check:")
     try:
         
         data = getShapeInformation(uninitialized)  
@@ -86,13 +93,5 @@ def main():
         print(f"Safely retrieved: {getShapeInformation(enum_var)}")
     
     print("\n")
-    print("ANALYSIS:")
-    print("Python enum with associated data:")
-    print("  - Enums store tuples or objects as values, accessing via .value")
-    print("  - Methods can extract and work with associated data")
-    print("  - None checks and type guards prevent AttributeError on uninitialized vars")
-    print("  - Workaround: Use Optional[EnumType] and isinstance() checks")
-
-
 
 main()
