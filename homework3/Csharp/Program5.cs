@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace Homework3.Csharp
 {
     // Task 5: Applied Enumeration - Order processing pipeline
-    // Standalone console program mirroring Python Program5.py behavior.
     internal static class Program5
     {
         private enum OrderStatus
@@ -74,23 +73,23 @@ namespace Homework3.Csharp
                 switch (newStatus)
                 {
                     case OrderStatus.Confirmed:
-                        Console.WriteLine($"  \\u2192 Sending confirmation email for order {OrderId}");
+                        Console.WriteLine($"\tSending confirmation email for order {OrderId}");
                         break;
                     case OrderStatus.Processing:
-                        Console.WriteLine("  \\u2192 Processing payment and preparing items");
+                        Console.WriteLine("\tProcessing payment and preparing items");
                         break;
                     case OrderStatus.Shipped:
                         TrackingNumber = $"TRACK-{OrderId}-{GetHashCode()}";
-                        Console.WriteLine($"  \\u2192 Order shipped! Tracking: {TrackingNumber}");
+                        Console.WriteLine($"\tOrder shipped! Tracking: {TrackingNumber}");
                         break;
                     case OrderStatus.Delivered:
-                        Console.WriteLine("  \\u2192 Order delivery confirmed, thank you!");
+                        Console.WriteLine("\tOrder delivery confirmed, thank you!");
                         break;
                     case OrderStatus.Refunded:
-                        Console.WriteLine($"  \\u2192 Refund processed: ${Total:F2}");
+                        Console.WriteLine($"\tRefund processed: ${Total:F2}");
                         break;
                     case OrderStatus.Cancelled:
-                        Console.WriteLine("  \\u2192 Order cancelled");
+                        Console.WriteLine("\tOrder cancelled");
                         break;
                 }
 
@@ -116,19 +115,20 @@ namespace Homework3.Csharp
             public void DisplayStatus()
             {
                 Console.WriteLine($"Order {OrderId}: {Status.ToString().ToUpperInvariant()}");
-                Console.WriteLine($"  Items: {string.Join(", ", Items)}");
-                Console.WriteLine($"  Total: ${Total:F2}");
-                Console.WriteLine($"  Message: {GetCustomerMessage()}");
+                Console.WriteLine($"\tItems: {string.Join(", ", Items)}");
+                Console.WriteLine($"\tTotal: ${Total:F2}");
+                Console.WriteLine($"\tMessage: {GetCustomerMessage()}");
             }
         }
 
         private static void Main()
         {
             Console.WriteLine(new string('=', 70));
-            Console.WriteLine("REAL-WORLD ENUM APPLICATION: Order Processing Pipeline");
+            Console.WriteLine("Order Processing Pipeline");
             Console.WriteLine(new string('=', 70));
             Console.WriteLine();
-            Console.WriteLine("Demonstrating how enum values drive the logic:\n");
+            Console.WriteLine("Demonstrating how enum values drive the logic:");
+            Console.WriteLine();
 
             var order = new Order(
                 orderId: "ORD-12345",
@@ -155,9 +155,9 @@ namespace Homework3.Csharp
             foreach (OrderStatus targetStatus in transitionsToTry)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Attempt transition: {order.Status} \\u2192 {targetStatus}");
+                Console.WriteLine($"Attempt transition: {order.Status} -> {targetStatus}");
                 bool ok = order.TransitionTo(targetStatus);
-                Console.WriteLine(ok ? "\\u2713 Transition successful" : "\\u2717 Invalid transition");
+                Console.WriteLine(ok ? " Transition successful" : " Invalid transition");
                 order.DisplayStatus();
             }
 
@@ -168,9 +168,9 @@ namespace Homework3.Csharp
 
             Console.WriteLine();
             Console.WriteLine($"Order is in state: {order.Status}");
-            Console.WriteLine($"Attempt transition: {order.Status} \\u2192 {OrderStatus.Processing}");
+            Console.WriteLine($"Attempt transition: {order.Status} -> {OrderStatus.Processing}");
             bool invalid = order.TransitionTo(OrderStatus.Processing);
-            Console.WriteLine(invalid ? "\\u2713 Transition successful" : "\\u2717 Invalid transition (already delivered/refunded)");
+            Console.WriteLine(invalid ? " Transition successful" : " Invalid transition (already delivered/refunded)");
 
             Console.WriteLine();
             Console.WriteLine(new string('=', 70));
@@ -195,31 +195,10 @@ namespace Homework3.Csharp
             foreach (OrderStatus targetStatus in cancelPath)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Attempt transition: {order2.Status} \\u2192 {targetStatus}");
+                Console.WriteLine($"Attempt transition: {order2.Status} -> {targetStatus}");
                 bool ok = order2.TransitionTo(targetStatus);
-                Console.WriteLine(ok ? "\\u2713 Transition successful" : "\\u2717 Invalid transition");
+                Console.WriteLine(ok ? " Transition successful" : " Invalid transition");
             }
-
-            Console.WriteLine();
-            Console.WriteLine(new string('=', 70));
-            Console.WriteLine("WHY ENUMS ARE ESSENTIAL HERE:");
-            Console.WriteLine(new string('=', 70));
-            Console.WriteLine();
-            Console.WriteLine("1. Type Safety:");
-            Console.WriteLine("   - Only valid OrderStatus values are allowed; no typos like 'shippped'.");
-            Console.WriteLine();
-            Console.WriteLine("2. Transition Rules Enforced:");
-            Console.WriteLine("   - Valid paths (e.g., Shipped \\u2192 Delivered) are encoded in a single place.");
-            Console.WriteLine("   - Impossible transitions are rejected by CanTransitionTo/TransitionTo.");
-            Console.WriteLine();
-            Console.WriteLine("3. Status-Specific Behavior:");
-            Console.WriteLine("   - Each enum value triggers distinct actions (emails, tracking numbers, refunds).");
-            Console.WriteLine();
-            Console.WriteLine("4. Refactoring Impact:");
-            Console.WriteLine("   - Replacing the enum with strings/integers would remove type safety,");
-            Console.WriteLine("     duplicate status values could appear, and transition logic would be fragile.");
-            Console.WriteLine();
-            Console.WriteLine("Without enums, this order pipeline would be much harder to maintain and reason about.");
         }
     }
 }

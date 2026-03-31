@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Homework3.Csharp
 {
-    // Task 3: Extended Enum Behavior and null/uninitialized handling
-    // Standalone console program mirroring Python Program3.py behavior.
+    // Task 3: Extended Enum Behavior and null/uninitialized handling, nullable value types and etc.
     internal static class Program3
     {
         private enum ShapeKind
@@ -15,48 +14,21 @@ namespace Homework3.Csharp
             Error = 99
         }
 
-        private sealed class ShapeData
-        {
-            public string Name { get; }
-            public double Radius { get; }
-            public double Side { get; }
-            public double Width { get; }
-            public double Height { get; }
-            public int? ErrorCode { get; }
-            public string? ErrorMessage { get; }
+        private record ShapeData(
+            string Name,
+            double Radius = 0,
+            double Side = 0,
+            double Width = 0,
+            double Height = 0,
+            int? ErrorCode = null,
+            string? ErrorMessage = null);
 
-            public ShapeData(
-                string name,
-                double radius = 0,
-                double side = 0,
-                double width = 0,
-                double height = 0,
-                int? errorCode = null,
-                string? errorMessage = null)
-            {
-                Name = name;
-                Radius = radius;
-                Side = side;
-                Width = width;
-                Height = height;
-                ErrorCode = errorCode;
-                ErrorMessage = errorMessage;
-            }
-
-            public override string ToString()
-            {
-                return $"Name={Name}, Radius={Radius}, Side={Side}, Width={Width}, Height={Height}, ErrorCode={ErrorCode}, ErrorMessage={ErrorMessage}";
-            }
-        }
-
-        private static readonly IReadOnlyDictionary<ShapeKind, ShapeData> ShapeDefinitions =
-            new Dictionary<ShapeKind, ShapeData>
-            {
-                { ShapeKind.Circle, new ShapeData("circle", radius: 5.0) },
-                { ShapeKind.Square, new ShapeData("square", side: 4.0) },
-                { ShapeKind.Rectangle, new ShapeData("rectangle", width: 6.0, height: 3.0) },
-                { ShapeKind.Error, new ShapeData("error", errorCode: 500, errorMessage: "Internal Server Error") }
-            };
+        private static readonly IReadOnlyDictionary<ShapeKind, ShapeData> ShapeDefinitions = {
+            { ShapeKind.Circle, new ShapeData("circle", radius: 5.0) },
+            { ShapeKind.Square, new ShapeData("square", side: 4.0) },
+            { ShapeKind.Rectangle, new ShapeData("rectangle", width: 6.0, height: 3.0) },
+            { ShapeKind.Error, new ShapeData("error", errorCode: 500, errorMessage: "Internal Server Error") }
+        };
 
         private static ShapeData GetShapeInformation(ShapeKind shape)
         {
@@ -79,7 +51,7 @@ namespace Homework3.Csharp
 
         private static void Main()
         {
-            Console.WriteLine("PART 1: Enum values with associated data (via lookup table)");
+            Console.WriteLine("Enum values with associated data (via lookup table)");
             Console.WriteLine();
 
             ShapeKind[] shapes = { ShapeKind.Circle, ShapeKind.Square, ShapeKind.Rectangle };
@@ -90,15 +62,15 @@ namespace Homework3.Csharp
                 double area = CalculateShapeArea(shape);
 
                 Console.WriteLine($"{shape}:");
-                Console.WriteLine($"  Data: {data}");
-                Console.WriteLine($"  Area: {area:F2}");
+                Console.WriteLine($"\tData: {data}");
+                Console.WriteLine($"\tArea: {area:F2}");
             }
 
             Console.WriteLine();
-            Console.WriteLine("PART 2: Accessing data on null / uninitialized enum variable");
+            Console.WriteLine("Accessing data on null / uninitialized enum variable");
             Console.WriteLine();
 
-            Console.WriteLine("Test 1: Safe access using nullable<ShapeKind> and HasValue check:");
+            Console.WriteLine("Safe access using Nullable<ShapeKind> and HasValue check:");
             ShapeKind? uninitialized = null;
 
             try
@@ -109,7 +81,7 @@ namespace Homework3.Csharp
                 }
                 else
                 {
-                    Console.WriteLine("Variable is null - safe check prevents InvalidOperationException");
+                    Console.WriteLine("Variable is null, safe check prevents InvalidOperationException");
                 }
             }
             catch (Exception e)
@@ -118,7 +90,7 @@ namespace Homework3.Csharp
             }
 
             Console.WriteLine();
-            Console.WriteLine("Test 2: Unsafe access using .Value on a null nullable enum:");
+            Console.WriteLine("Unsafe access using .Value on a null nullable enum:");
 
             try
             {
@@ -132,7 +104,7 @@ namespace Homework3.Csharp
             }
 
             Console.WriteLine();
-            Console.WriteLine("Test 3: Accessing enum methods safely:");
+            Console.WriteLine("Accessing enum methods safely:");
 
             try
             {
@@ -151,20 +123,13 @@ namespace Homework3.Csharp
             }
 
             Console.WriteLine();
-            Console.WriteLine("Test 4: Using non-null enum with associated data:");
+            Console.WriteLine("Using non-null enum with associated data:");
 
             ShapeKind? enumVar = ShapeKind.Error;
             if (enumVar.HasValue)
             {
                 Console.WriteLine($"Safely retrieved: {GetShapeInformation(enumVar.Value)}");
             }
-
-            Console.WriteLine();
-            Console.WriteLine("ANALYSIS:");
-            Console.WriteLine("- C# enums cannot directly store per-member data like Python tuples.");
-            Console.WriteLine("- Workaround: use a separate data class (ShapeData) and a lookup table.");
-            Console.WriteLine("- Nullable<Enum> must be checked with HasValue before .Value access.");
-            Console.WriteLine("- Calling .Value on a null nullable enum throws InvalidOperationException at runtime.");
         }
     }
 }
