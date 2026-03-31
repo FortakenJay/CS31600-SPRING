@@ -1,13 +1,10 @@
 from enum import Enum
 from typing import Optional
 
-
+# THis is an enum that tracks different Order Statuses of an e-commerce platform. 
+# These are predefined by the client and/or business rules
 class OrderStatus(Enum):
-    """
-    Real-world enum: Order processing pipeline.
-    Enums drive the logic - removing them would require major redesign.
-    Each status has behavior, validation rules, and transitions.
-    """
+
     PENDING = "pending"
     CONFIRMED = "confirmed"
     PROCESSING = "processing"
@@ -16,73 +13,63 @@ class OrderStatus(Enum):
     CANCELLED = "cancelled"
     REFUNDED = "refunded"
 
-
+# This class defines what an Order i and how it behaves. First we build a constructor of what can an order have
+# then, we create a chart that defines what can a status transition so this means that each orderstatus is dependent on
+# other orderstatuses. Then we created a function that transition the status of the order to the new status depending on the chart and user. 
+# There is also another function that gives a predetermined message to the user depending on the order status. 
+# Finally, we have a function that displays the order status and other information about the order.
 class Order:
-    """
-    Order object that uses enum for state management.
-    Logic depends entirely on the enum value.
-    """
-    def __init__(self, order_id: str, items: list, total: float):
-        self.order_id = order_id
+ 
+    def __init__(self, orderID: str, items: list, total: float):
+        self.orderID = orderID
         self.items = items
         self.total = total
         self.status: OrderStatus = OrderStatus.PENDING
-        self.tracking_number: Optional[str] = None
+        self.orderTrackingNumber: Optional[str] = None
     
-    def can_transition_to(self, new_status: OrderStatus) -> bool:
-        """
-        Validate status transitions based on enum values.
-        This logic is enum-driven and cannot be replaced with strings/integers.
-        """
-        valid_transitions = {
+    def orderTransitionChart(self,newOrderStatus: OrderStatus) -> bool:
+       
+        validTransitions = {
             OrderStatus.PENDING: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
             OrderStatus.CONFIRMED: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
             OrderStatus.PROCESSING: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
             OrderStatus.SHIPPED: [OrderStatus.DELIVERED],
             OrderStatus.DELIVERED: [OrderStatus.REFUNDED],
-            OrderStatus.CANCELLED: [],  # Terminal state
-            OrderStatus.REFUNDED: [],   # Terminal state
+            OrderStatus.CANCELLED: [],  
+            OrderStatus.REFUNDED: [],   
         }
         
-        allowed_next_states = valid_transitions.get(self.status, [])
-        return new_status in allowed_next_states
+        allowedNextStates = validTransitions.get(self.status, [])
+        return newOrderStatus in allowedNextStates
     
-    def transition_to(self, new_status: OrderStatus) -> bool:
-        """
-        Attempt to move the order to a new status.
-        Uses enum-driven validation and enum-specific actions.
-        """
-        if not self.can_transition_to(new_status):
+    def transitionFunction(self, newOrderStatus: OrderStatus) -> bool:
+      
+        if not self.orderTransitionChart(newOrderStatus):
             return False
-        
-        # Enum-specific side effects
-        if new_status == OrderStatus.CONFIRMED:
-            print(f"  → Sending confirmation email for order {self.order_id}")
-        elif new_status == OrderStatus.PROCESSING:
+        if newOrderStatus == OrderStatus.CONFIRMED:
+            print(f"  → Sending confirmation email for order {self.orderID}")
+        elif newOrderStatus == OrderStatus.PROCESSING:
             print(f"  → Processing payment and preparing items")
-        elif new_status == OrderStatus.SHIPPED:
-            self.tracking_number = f"TRACK-{self.order_id}-{id(self)}"
-            print(f"  → Order shipped! Tracking: {self.tracking_number}")
-        elif new_status == OrderStatus.DELIVERED:
+        elif newOrderStatus == OrderStatus.SHIPPED:
+            self.orderTrackingNumber = f"TRACK-{self.orderID}-{id(self)}"
+            print(f"  → Order shipped! Tracking: {self.orderTrackingNumber}")
+        elif newOrderStatus == OrderStatus.DELIVERED:
             print(f"  → Order delivery confirmed, thank you!")
-        elif new_status == OrderStatus.REFUNDED:
+        elif newOrderStatus == OrderStatus.REFUNDED:
             print(f"  → Refund processed: ${self.total:.2f}")
-        elif new_status == OrderStatus.CANCELLED:
+        elif newOrderStatus == OrderStatus.CANCELLED:
             print(f"  → Order cancelled")
         
-        self.status = new_status
+        self.status = newOrderStatus
         return True
     
-    def get_customer_message(self) -> str:
-        """
-        Generate status-specific customer message using enum.
-        Each enum value maps to unique user-facing logic.
-        """
+    def getCustomerMessage(self) -> str:
+        
         messages = {
             OrderStatus.PENDING: "Your order is pending. Please confirm.",
             OrderStatus.CONFIRMED: "Order confirmed! We'll process it soon.",
             OrderStatus.PROCESSING: "Your order is being prepared...",
-            OrderStatus.SHIPPED: f"Your order shipped! Tracking: {self.tracking_number}",
+            OrderStatus.SHIPPED: f"Your order shipped! Tracking: {self.orderTrackingNumber}",
             OrderStatus.DELIVERED: "Your order was delivered. Leave a review!",
             OrderStatus.CANCELLED: "Your order has been cancelled.",
             OrderStatus.REFUNDED: f"Your refund of ${self.total:.2f} has been processed.",
@@ -90,31 +77,37 @@ class Order:
         return messages.get(self.status, "Unknown status")
     
     def display_status(self) -> None:
-        """Show current order state."""
-        print(f"Order {self.order_id}: {self.status.value.upper()}")
+       
+        print(f"Order {self.orderID}: {self.status.value.upper()}")
         print(f"  Items: {', '.join(self.items)}")
         print(f"  Total: ${self.total:.2f}")
-        print(f"  Message: {self.get_customer_message()}")
+        print(f"  Message: {self.getCustomerMessage()}")
 
 
+
+# The main function creates a predetermined order with information, these are just examples. 
+# In main the order goes through different steps of the processing pipeline where it emulates a real processing of an order.
+# an order is created -> changes from pending to confirmed -> processing -> shipped -> delivered -> refunded. 
+# Then we try to make an invalid transition and we see that it is not possible. 
+# Finally, we create another order and we try to cancel it.
+# So, the main idea is that without enum, the logic has to be different since we would have to write more code to check for the different states
+# Also, we would have to write many ways to safely transition between states, but with enums we can just define the valid
+# states that a state can transition to
+# Removing enum will overall lead to a huge refactoring that it can be avoided with the use of enums. 
 def main():
-    print("=" * 70)
     print("REAL-WORLD ENUM APPLICATION: Order Processing Pipeline")
-    print("=" * 70)
     print("\nDemonstrating how enum values drive the logic:\n")
     
-    # Create an order
     order = Order(
-        order_id="ORD-12345",
+        orderID="ORD-12345",
         items=["Laptop", "Mouse", "Keyboard"],
         total=1299.99
     )
     
-    print(f"Created order {order.order_id}")
+    print(f"Created order {order.orderID}")
     order.display_status()
-    
-    # Process the order through valid state transitions
-    transitions_to_try = [
+
+    transitionToTry = [
         OrderStatus.CONFIRMED,
         OrderStatus.PROCESSING,
         OrderStatus.SHIPPED,
@@ -122,42 +115,38 @@ def main():
         OrderStatus.REFUNDED,
     ]
     
-    print("\n" + "=" * 70)
+    print("\n" )
     print("Processing Valid State Transitions:")
-    print("=" * 70)
     
-    for target_status in transitions_to_try:
+    for target_status in transitionToTry:
         print(f"\nAttempt transition: {order.status.value} → {target_status.value}")
-        if order.transition_to(target_status):
+        if order.transitionFunction(target_status):
             print(f"✓ Transition successful")
         else:
             print(f"✗ Invalid transition")
         order.display_status()
     
-    # Try invalid transition
-    print("\n" + "=" * 70)
+  
+    print("\n" )
     print("Attempting Invalid Transition:")
-    print("=" * 70)
     
     print(f"\nOrder is in state: {order.status.value}")
     print(f"Attempt transition: {order.status.value} → {OrderStatus.PROCESSING.value}")
-    if order.transition_to(OrderStatus.PROCESSING):
-        print(f"✓ Transition successful")
+    if order.transitionFunction(OrderStatus.PROCESSING):
+        print(f"Transition successful")
     else:
-        print(f"✗ Invalid transition (already delivered/refunded)")
+        print(f"Invalid transition (already delivered/refunded)")
     
-    # Create another order to show a cancellation path
-    print("\n" + "=" * 70)
+    print("\n" )
     print("Alternative Path: Order Cancellation")
-    print("=" * 70)
     
     order2 = Order(
-        order_id="ORD-54321",
+        orderID="ORD-54321",
         items=["Book"],
         total=29.99
     )
     
-    print(f"\nCreated order {order2.order_id}")
+    print(f"\nCreated order {order2.orderID}")
     order2.display_status()
     
     cancel_path = [
@@ -167,37 +156,12 @@ def main():
     
     for target_status in cancel_path:
         print(f"\nAttempt transition: {order2.status.value} → {target_status.value}")
-        if order2.transition_to(target_status):
-            print(f"✓ Transition successful")
+        if order2.transitionFunction(target_status):
+            print(f"Transition successful")
         else:
-            print(f"✗ Invalid transition")
+            print(f"Invalid transition")
     
-    print("\n" + "=" * 70)
-    print("WHY ENUMS ARE ESSENTIAL HERE:")
-    print("=" * 70)
-    print("""
-1. Type Safety: 
-   - Only valid OrderStatus values allowed, no typos like "shippped"
-   
-2. Transition Rules Enforced:
-   - Can only move through valid states, e.g., SHIPPED → DELIVERED
-   - Cannot jump directly from PENDING → DELIVERED
-   - Enum drives the validation logic
-   
-3. Status-Specific Behavior:
-   - Each enum value triggers unique actions (emails, tracking numbers, refunds)
-   - Impossible to implement without explicit enum handling
-   
-4. Refactoring Impact:
-   - Removing enum would require:
-     * Replacing all status checks with string comparisons
-     * Manually managing valid transitions as separate rules
-     * Type safety lost - any string could be a status
-     * Major logic rewrite to map behavior to status values
-   
-Without enums, this would be fragile and error-prone code.
-    """)
+    print("\n" )
 
 
-if __name__ == "__main__":
-    main()
+main()
