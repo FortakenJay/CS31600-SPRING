@@ -29,7 +29,7 @@ def printEnumWithoutHardcoding(enumClass: type) -> None:
 # then we also tried to call the function directly with the alias name and it works since it's just an alias to the first value.
 # Then we checked if FIRST and the duplicate alias are the same object and it returns true, meaning that they are the same member in the enum.
 # Lastly we checked for how many mombers it appear and which members appear and it only shows FIRST and SECOND but not the alias since it's hidden as an alias.
-# However we cna still access the alias by the name directly but will return the same value as First. 
+# However we can still access the alias by the name directly but will return the same value as First. 
 # 
 def main():
 
@@ -74,6 +74,4 @@ def main():
     
     print("\n")
 
-if __name__ == "__main__":
-    main()
 main()

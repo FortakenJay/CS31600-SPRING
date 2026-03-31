@@ -1,10 +1,14 @@
-from enum import Enum
+from enum import Enum, IntFlag
 
 # This initializes an enum class that defines three colors(RED, GREEN, BLUE) with associated integer values (1, 2, 3).
 class Color(Enum):
 	RED = 1
 	GREEN = 2
 	BLUE = 3
+ 
+class Status(IntFlag):
+    PENDING = 1
+    FINISHED = 4
 
 
 
@@ -30,6 +34,11 @@ def main():
 		print("Python result: Runtime error (ValueError) when converting to enum.")
 		print(f"Details: {error}")
 
-
-
+	weirdEnumVal= 5
+	try:
+		weirdValue = Status(weirdEnumVal)
+		print(f"SUCCESS: {weirdEnumVal}")
+	except ValueError as e:
+		print(f"FAILED: {e}")
+     
 main()
