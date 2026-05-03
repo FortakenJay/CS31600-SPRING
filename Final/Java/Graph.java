@@ -3,7 +3,7 @@ import java.util.*;
 public class Graph
 {
     private ArrayList<String> vertices;
-    private HashMap<String, ArrayList<String>> adjList;
+    private HashMap<String, ArrayList<String>> adjList; // s -> [n...]
 
     public Graph()
     {

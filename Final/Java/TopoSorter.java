@@ -22,8 +22,9 @@ public class TopoSorter
         TopoSortResult cycleResult = new CycleFinder(graph).find();
         if (cycleResult != null)
         {
-            return cycleResult;
+            return cycleResult; // Topo can't be done if graph is a cycle.
         }
+
         for (String v : graph.getVertices())
         {
             if (state.get(v) == 0)

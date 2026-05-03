@@ -24,6 +24,9 @@ public class CycleFinder
             if (state.get(v) == 0)
             {
                 ArrayList<String> cycle = dfs(v);
+
+                // dfs returns non null when a cycle is detected. 
+
                 if (cycle != null)
                 {
                     return new TopoSortResult(true, cycle);
@@ -43,12 +46,18 @@ public class CycleFinder
             {
                 int idx = dfsStack.indexOf(n);
                 ArrayList<String> cycle = new ArrayList<>(dfsStack.subList(idx, dfsStack.size()));
+
+                // grab the last occurrence of current node (the cycle) and the following nodes which eventually cycle back to the current node.
+
                 cycle.add(n);
                 return cycle;
             }
             if (state.get(n) == 0)
             {
                 ArrayList<String> cycle = dfs(n);
+
+                // continue to dfs on the neighbors of v 
+
                 if (cycle != null)
                 {
                     return cycle;
@@ -56,6 +65,9 @@ public class CycleFinder
             }
         }
         state.put(v, 2);
+
+        // current node is completed, we've gone through all of it's neighbors.
+
         dfsStack.remove(dfsStack.size() - 1);
         return null;
     }
