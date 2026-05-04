@@ -11,12 +11,15 @@ public class Graph
         adjList = new HashMap<>();
     }
 
-    public void addVertex(String v)
+    public void addVertex(String... vs) 
     {
-        if (!adjList.containsKey(v))
+        for (String v : vs) 
         {
-            vertices.add(v);
-            adjList.put(v, new ArrayList<>());
+            if (!adjList.containsKey(v)) 
+            {
+                vertices.add(v);
+                adjList.put(v, new ArrayList<>());
+            }
         }
     }
 
